@@ -1,0 +1,72 @@
+# mongodb
+services:
+  mongodb:
+    image: mongo:8.2.5
+    container_name: mongodb
+    hostname: mongodb
+    restart: always
+    ports:
+      - 27017:27017
+    volumes:
+      - mongo-data:/data/db
+    env_file:
+      - .mongo_env
+    secrets:
+      - ROOT_USERNAME
+      - ROOT_PASSWORD
+    healthcheck:
+      test: echo 'db.runCommand("ping").ok' | mongosh localhost:27017/test --quiet
+      interval: 60s
+      timeout: 10s
+      retries: 5
+      start_period: 30s
+    networks:
+      mongodb_net:
+        aliases:
+          - mongo
+          - mongodb
+
+  mongo-express:
+    image: mongo-express
+    container_name: mongo-express
+    hostname: mongo-express
+    depends_on:
+      mongodb:
+        condition: service_healthy
+    restart: always
+    ports:
+      - 8081:8081
+    env_file:
+      - .mongo_env
+    secrets:
+      - ROOT_USERNAME
+      - ROOT_PASSWORD
+      - BASIC_USERNAME
+      - BASIC_PASSWORD
+    networks:
+      mongodb_net:
+        aliases:
+          - mongo-web
+          - mongo-express
+
+secrets:
+  ROOT_USERNAME:
+    file: ./env_vars/.MONGO_ROOT_USER
+  ROOT_PASSWORD:
+    file: ./env_vars/.MONGO_ROOT_PASSWORD
+  BASIC_USERNAME:
+    file: ./env_vars/.MONGO_BASIC_USER
+  BASIC_PASSWORD:
+    file: ./env_vars/.MONGO_BASIC_PASSWORD
+
+volumes:
+  mongo-data:
+
+networks:
+  mongodb_net:
+    driver: bridge
+    enable_ipv6: false
+    ipam:
+      driver: default
+      config: 
+      - subnet: 172.16.232.0/24
