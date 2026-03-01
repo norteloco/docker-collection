@@ -2,15 +2,60 @@
 
 Репозиторий с коллекцией популярных и не очень сборок для запуска приложений и сервисов в контейнерезированном окружении Docker.  
 
-- [Состав коллекции](#состав-коллекции)
+- [Состав](#состав)
+- [Запуск](#запуск)
+    - [Команды](#команды)
 - [Дополнительно](#дополнительно)
-    - [TO DO](#to-do)
-        - [MongoDB](#mongodb)
-        - [Mongo Express](#mongo-express)
+- [TO DO](#to-do)
 
-## Состав коллекции
+## Состав
 
 - MongoDB (+Mongo Express)
+
+## Запуск
+
+0. Установка компонент Docker
+    - [Docker Engine](https://docs.docker.com/engine/install/) или [Docker Desktop](https://docs.docker.com/desktop/) в зависимости от платформы.
+    - [Docker Compose](https://docs.docker.com/compose/install/)
+
+1. Склонировать этот репозиторий  
+```
+git clone https://github.com/norteloco/docker-collection.git
+```
+
+2. Перейти в директорию с требуемой сборкой
+```
+cd mongodb
+```
+
+3. Пользоваться
+
+### Команды
+
+- *Запуск*
+```
+docker compose up -d
+```
+
+- *Остановка*
+```
+docker compose down
+```
+
+- *Посмотреть логи*
+```
+docker compose logs <имя-контейнера>
+```
+- *Запуск отдельного контейнера*
+```
+docker compose up <имя-контейнера>
+```
+
+- *Остановка*
+```
+docker compose stop <имя-контейнера>
+```
+
 
 ## Дополнительно
 
@@ -20,8 +65,10 @@
 
 - Prometheus
 - Grafana
+- Nginx (+Certbot)
 - Graylog
 - Zabbix (упрощение официальной сборки [zabbix-docker](https://github.com/zabbix/zabbix-docker))
 - Portainer
 - AWX
 - HashiCorp Vault
+
