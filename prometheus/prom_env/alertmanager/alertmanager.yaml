@@ -1,0 +1,32 @@
+global:
+  resolve_timeout: 5m
+  telegram_api_url: 'https://api.telegram.org'
+
+templates:
+  - '/etc/alertmanager/telegram.tmpl'
+  # - '/etc/alertmanager/*.tmpl' # если используется несколько разных шаблонов
+
+route:
+  receiver: 'blackhole'
+  group_wait: 30s
+  group_interval: 5m
+  repeat_interval: 24h
+  group_by: ['alertname', 'severity']
+
+  routes:
+  - receiver: 'telegram'
+    group_wait: 10s
+    matchers:
+      - severity=~"medium|high|critical"
+
+
+receivers:
+  - name: 'telegram'
+    telegram_configs:
+    - bot_token_file: /run/secrets/BOT_TOKEN
+      chat_id_file: /run/secrets/CHAT_ID
+      message_thread_id: 4
+      message: '{{ template "telegram.default" .}}'
+      parse_mode: "HTML"
+
+  - name: 'blackhole'
