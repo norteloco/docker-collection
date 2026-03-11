@@ -17,7 +17,7 @@ route:
   - receiver: 'telegram'
     group_wait: 10s
     matchers:
-      - severity=~"medium|high|critical"
+      - severity=~"info|medium|high|critical"
 
 
 receivers:
