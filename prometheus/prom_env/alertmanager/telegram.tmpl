@@ -1,0 +1,20 @@
+{{ define "telegram.default" }}
+{{ range .Alerts }}
+{{ if eq .Status "firing" }}
+ 🆘<b>Проблема: {{ .Labels.alertname }}</b>
+{{ else }}
+ ✅<b>Устранено: {{ .Labels.alertname }}</b>
+⏱️<i>Продолжительность:</i> {{ .EndsAt.Sub .StartsAt }}
+{{ end }}
+{{- if .Annotations.message }}
+<i>{{ .Annotations.message }}</i>
+{{- end }}
+{{- if .Annotations.description }}
+📌{{ .Annotations.description }}
+{{- end }}
+{{- if .Annotations.summary }}
+📋<i>{{ .Annotations.summary }}</i>
+{{- end }}
+
+{{ end }}
+{{ end }}
