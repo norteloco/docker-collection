@@ -1,0 +1,83 @@
+groups: 
+- name: node-rules
+  rules:
+  - alert: 'Высокий уровень нагрузки на CPU'
+    expr: (1 - avg by(instance) (irate(node_cpu_seconds_total{mode="idle"}[5m]))) * 100 > 75
+    for: 15m
+    labels:
+      severity: medium
+    annotations:
+      description: '{{ $labels.instance }}: Высокий уровень нагрузки на CPU'
+      summary: 'Текущий уровень нагрузки: {{ printf "%.2f" $value }}% '
+
+  - alert: 'Критический уровень нагрузки на CPU'
+    expr: (1 - avg by(instance) (irate(node_cpu_seconds_total{mode="idle"}[5m]))) * 100 > 90
+    for: 15m
+    labels:
+      severity: high
+    annotations:
+      description: '{{ $labels.instance }}: Критический уровень нагрузки на CPU'
+      summary: 'Текущий уровень нагрузки: {{ printf "%.2f" $value }}% '
+
+  - alert: 'Высокий уровень использования памяти'
+    expr: (node_memory_MemTotal_bytes - node_memory_MemFree_bytes - node_memory_Buffers_bytes - node_memory_Cached_bytes) / node_memory_MemTotal_bytes * 100 > 75
+    for: 15m
+    labels:
+      severity: medium
+    annotations:
+      description: '{{ $labels.instance }}: Высокий уровень использования памяти'
+      summary: 'Текущий уровень использования: {{ printf "%.2f" $value }}% '
+      
+  - alert: 'Критический уровень использования памяти'
+    expr: (node_memory_MemTotal_bytes - node_memory_MemFree_bytes - node_memory_Buffers_bytes - node_memory_Cached_bytes) / node_memory_MemTotal_bytes * 100 > 90
+    for: 15m
+    labels:
+      severity: critical
+    annotations:
+      description: '{{ $labels.instance }}: Критический уровень использования памяти'
+      summary: 'Текущий уровень использования: {{ printf "%.2f" $value }}% '
+
+  - alert: 'Низкий уровень доступного дискового пространства'
+    expr: (node_filesystem_avail_bytess{mountpoint!~"/(run|var/run|sys|dev).*",fstype!="tmpfs"} / node_filesystem_size_bytess{mountpoint!~"/(run|var/run|sys|dev).*",fstype!="tmpfs"}) * 100 < 15
+    for: 5m
+    labels:
+      severity: high
+    annotations:
+      description: '{{ $labels.instance }}: Низкий уровень доступного дискового пространства'
+      summary: '({{ $labels.mountpoint }}): доступно менее {{ printf "%.2f" $value }}%'
+
+  - alert: 'Критически низкий уровень доступного дискового пространства'
+    expr: (node_filesystem_avail_bytess{mountpoint!~"/(run|var/run|sys|dev).*",fstype!="tmpfs"} / node_filesystem_size_bytess{mountpoint!~"/(run|var/run|sys|dev).*",fstype!="tmpfs"}) * 100 < 15
+    for: 5m
+    labels:
+      severity: critical
+    annotations:
+      description: '{{ $labels.instance }}: Низкий уровень доступного дискового пространства'
+      summary: '({{ $labels.mountpoint }}): доступно менее {{ printf "%.2f" $value }}%'
+
+  - alert: 'Высокий уровень нагрузки на диск в течение 10 минут'
+    expr: avg by(instance) (irate(node_disk_io_time_seconds_total[1m])) * 100 > 90
+    for: 10m
+    labels:
+      severity: high
+    annotations:
+      description: '{{ $labels.instance }}: Высокий уровень нагрузки ввода-вывода'
+      summary: 'Общая загрузка IO более {{ printf "%.2f" $value }}%'
+
+  - alert: 'Система была перезагружена'
+    expr: node_time_seconds - node_boot_time_seconds < 300
+    for: 0m
+    labels:
+      severity: info
+    annotations:
+      description: '{{ $labels.instance }}: Система была перезагружена < 5 минут назад'
+      summary: 'Время работы системы: {{ humanizeDuration $value }}'
+
+  - alert: 'Node Exporter: ошибка подключения'
+    expr: up{job="node"} == 0
+    for: 5m
+    labels:
+      severity: critical
+    annotations:
+      description: '{{ $labels.instance }}: Node Exporter не работает или хост недоступен'
+      summary: 'Не удается подключиться к Node Exporter для получения метрик (код: {{ $value }})'

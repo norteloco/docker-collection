@@ -1,0 +1,47 @@
+groups:
+  - name: cadvisor-rules
+    rules:
+    - alert: 'Container: Повышенный уровень загрузки использования CPU'
+      expr: rate(container_cpu_usage_seconds_total{name=~".+"}[1m]) > 2
+      for: 5m
+      labels:
+        severity: medium
+      annotations:
+        description: 'Контейнер {{ $labels.instance }} ({{ $labels.id }}): Высокий уровень нагрузки на CPU'
+        summary: 'Текущий уровень нагрузки: {{ printf "%.2f" $value }}% '
+    
+    - alert: 'Container: Высокий уровень загрузки использования CPU'
+      expr: rate(container_cpu_usage_seconds_total{name=~".+"}[1m]) > 5
+      for: 5m
+      labels:
+        severity: high
+      annotations:
+        description: 'Контейнер {{ $labels.instance }} ({{ $labels.id }}): Высокий уровень нагрузки на CPU'
+        summary: 'Текущий уровень нагрузки: {{ printf "%.2f" $value }}% '
+    
+    - alert: "Container: ошибка доступности более 5 минут"
+      expr: time() - container_last_seen{name=~".+"} > 300
+      for: 1m
+      labels:
+        severity: high
+      annotations:
+        description: 'Контейнер {{ $labels.instance }} ({{ $labels.id }}): недоступен более 5 минут'
+        summary: 'Последний раз был доступен: {{ humanizeDuration $value }} назад'
+    
+    - alert: "Container: ошибка доступности более 15 минут"
+      expr: time() - container_last_seen{name=~".+"} > 900
+      for: 1m
+      labels:
+        severity: critical
+      annotations:
+        description: 'Контейнер {{ $labels.instance }} ({{ $labels.id }}): недоступен более 15 минут'
+        summary: 'Последний раз был доступен: {{ humanizeDuration $value }} назад'
+
+    - alert: "Container: перезапускается"
+      expr: changes(container_start_time_seconds{name=~".+"}[15m]) > 2
+      for: 5m
+      labels:
+        severity: info
+      annotations:
+        description: 'Контейнер {{ $labels.instance }} ({{ $labels.id }}) был перезапущен'
+        summary: 'Количество перезапусков контейнера за последние 5 минут: {{ humanize $value }}'

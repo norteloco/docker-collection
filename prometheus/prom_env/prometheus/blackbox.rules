@@ -1,0 +1,92 @@
+groups: 
+- name: blackbox-rules
+  rules:
+  - alert: 'Ошибка доступности сайта'
+    expr: up{job="blackbox"} == 0
+    for: 5m
+    labels:
+      severity: high
+    annotations:
+      description: '{{ $labels.instance }}: Сайт не доступен более 5 минут'
+      summary: 'Не удалось подключиться к сайту по указанному адресу более 5 минут'
+
+  - alert: 'Ошибка доступности сайта'
+    expr: up{job="blackbox"} == 0
+    for: 15m
+    labels:
+      severity: critical
+    annotations:
+      description: '{{ $labels.instance }}: Сайт не доступен более 15 минут'
+      summary: 'Не удалось подключиться к сайту по указанному адресу более 15 минут'
+
+  - alert: 'Ошибка в работе сайта'
+    expr: probe_http_status_code <=199 or probe_http_status_code >= 404
+    for: 5m
+    labels:
+      severity: high
+    annotations:
+      description: '{{ $labels.instance }}: Не удалось подключиться к сайту более 5 минут'
+      summary: 'При подключении по указанному адресу получен код ответа {{ $value }}'
+
+  - alert: 'Ошибка в работе сайта'
+    expr: probe_http_status_code <=199 or probe_http_status_code >= 404
+    for: 15m
+    labels:
+      severity: critical
+    annotations:
+      description: '{{ $labels.instance }}: Не удалось подключиться к сайту более 15 минут'
+      summary: 'При подключении по указанному адресу получен код ответа {{ $value }}'
+
+  - alert: 'HTTP: Низкая скорость подключения'
+    expr: avg_over_time(probe_http_duration_seconds[1m]) > 10
+    for: 5m
+    labels:
+      severity: medium
+    annotations:
+      description: '{{ $labels.instance }}: HTTP(s) подключение занимает более 10 секунд'
+      summary: 'Подключение по указанному адресу занимает длительное время'
+
+  - alert: 'SSL: Срок действия сертификата подходит к концу'
+    expr: probe_ssl_earliest_cert_expiry - time() < 86400 * 14
+    for: 15m
+    labels:
+      severity: medium
+    annotations: 
+      description: '{{ $labels.instance }}: срок действия SSL-сертификата закончится через {{ humanizeDuration $value }}'
+      summary: 'Сертификат скоро станет недействителен'
+
+  - alert: 'SSL: Срок действия сертификата подходит к концу'
+    expr: probe_ssl_earliest_cert_expiry - time() < 86400 * 7
+    for: 15m
+    labels:
+      severity: high
+    annotations: 
+      description: '{{ $labels.instance }}: срок действия SSL-сертификата закончится через {{ humanizeDuration $value }}'
+      summary: 'Сертификат скоро станет недействителен'
+
+  - alert: 'SSL: Срок действия сертификата подходит к концу'
+    expr: probe_ssl_earliest_cert_expiry - time() < 86400 * 1
+    for: 15m
+    labels:
+      severity: critical
+    annotations: 
+      description: '{{ $labels.instance }}: срок действия SSL-сертификата закончится через {{ humanizeDuration $value }}'
+      summary: 'Сертификат скоро станет недействителен'
+
+  - alert: 'SSL: Срок действия сертификата истек'
+    expr: probe_ssl_earliest_cert_expiry - time() <= 0
+    for: 15m
+    labels:
+      severity: critical
+    annotations: 
+      description: '{{ $labels.instance }}: срок действия SSL-сертификата закончился'
+      summary: 'Необходимо перевыпустить сертификат'
+
+  - alert: 'Blackbox: Ошибка получения метрик'
+    expr: probe_success == 0
+    for: 5m
+    labels:
+      severity: high
+    annotations:
+      description: '{{ $labels.instance }}: Ошибка при подключение'
+      summary: 'Не удалось установить стабильное подключение для сбора метрик (код: {{ $value }})'
