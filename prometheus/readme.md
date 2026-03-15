@@ -11,6 +11,9 @@
     - [Конфигурации](#конфигурации)
 ## Требования
 
+1. [Docker Engine](https://docs.docker.com/engine/install/) или [Docker Desktop](https://docs.docker.com/desktop/) в зависимости от платформы.
+2. [Docker Compose](https://docs.docker.com/compose/install/)
+
 ## Описание
 
 ### Сервисы
