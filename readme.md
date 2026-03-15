@@ -10,7 +10,10 @@
 
 ## Состав
 
-- MongoDB (+Mongo Express)
+- [MongoDB](./mongodb/)
+    - Включает в себя и Mongo Express для просмотра БД через Web-интерфейс
+- [Prometheus](./prometheus/)
+    - Также Alertmanager и несколько популярных экспортеров: Node Exporter, Blackbox Exporter, cAdvisor.
 
 ## Запуск
 
@@ -63,7 +66,6 @@ docker compose stop <имя-контейнера>
 
 ## TO DO
 
-- Prometheus
 - Grafana
 - Nginx (+Certbot)
 - Graylog
