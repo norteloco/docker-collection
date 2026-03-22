@@ -11,9 +11,14 @@
 ## Состав
 
 - [MongoDB](./mongodb/)
-    - Включает в себя и Mongo Express для просмотра БД через Web-интерфейс
+    - __Документоориентированная СУБД__.  
+    Включает в себя и Mongo Express для просмотра БД через Web-интерфейс
 - [Prometheus](./prometheus/)
-    - Также Alertmanager и несколько популярных экспортеров: Node Exporter, Blackbox Exporter, cAdvisor.
+    - __Система мониторинга__.  
+    Также включает в себя Alertmanager и несколько популярных экспортеров: Node Exporter, Blackbox Exporter, cAdvisor.
+- [Grafana](./grafana/)
+    - __Система визуализации метрик__.  
+    Практически стандартная установка без дополнительных плагинов.
 
 ## Запуск
 
@@ -66,7 +71,6 @@ docker compose stop <имя-контейнера>
 
 ## TO DO
 
-- Grafana
 - Nginx (+Certbot)
 - Graylog
 - Zabbix (упрощение официальной сборки [zabbix-docker](https://github.com/zabbix/zabbix-docker))
