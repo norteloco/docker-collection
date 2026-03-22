@@ -1,0 +1,44 @@
+services:
+  grafana:
+    image: grafana/grafana:12.4
+    container_name: grafana
+    hostname: grafana
+    restart: unless-stopped
+    env_file:
+      - .grf_env
+    ports:
+      - 3000:3000
+    volumes:
+      - grafana-data:/var/lib/grafana
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:3000/api/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 60s
+    secrets:
+      - ADMIN_USER
+      - ADMIN_PASSWORD
+    networks:
+      grf_net:
+        aliases:
+          - grafana-server
+          - grafana
+
+secrets:
+  ADMIN_USER:
+    file: ./env_vars/.ADMIN_USER
+  ADMIN_PASSWORD:
+    file: ./env_vars/.ADMIN_PASSWORD
+
+networks:
+  grf_net:
+    driver: bridge
+    enable_ipv6: false
+    ipam:
+      driver: default
+      config: 
+      - subnet: 172.16.232.0/24
+
+volumes:
+  grafana-data:
